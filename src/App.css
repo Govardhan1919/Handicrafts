@@ -687,3 +687,13 @@ body {
     font-size: 3rem;
   }
 }
+
+/* Login Page Styles */
+.login-page {
+  background: linear-gradient(135deg, #f4e4bc, #deb887);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}

@@ -8,9 +8,12 @@ import Consultant from './components/Consultant';
 import Admin from './components/Admin';
 import Cart from './components/Cart';
 import Footer from './components/Footer';
+import Login from './components/Login';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([
     {
@@ -98,14 +101,27 @@ function App() {
   };
 
   const renderPage = () => {
+    // Show login page if trying to access protected pages without authentication
+    if (!isAuthenticated && ['artisan', 'consultant', 'admin'].includes(currentPage)) {
+      return <Login setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} setUserRole={setUserRole} />;
+    }
+
     switch(currentPage) {
       case 'home': return <Home setCurrentPage={setCurrentPage} />;
       case 'customer': return <Customer products={products.filter(p => p.approved)} addToCart={addToCart} />;
       case 'artisan': return <Artisan products={products} addProduct={addProduct} />;
       case 'consultant': return <Consultant products={products} approveProduct={approveProduct} />;
       case 'admin': return <Admin products={products} />;
+      case 'login': return <Login setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} setUserRole={setUserRole} />;
       default: return <Home setCurrentPage={setCurrentPage} />;
     }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+    setCurrentPage('home');
+    // TODO: Add Supabase logout here
   };
 
   return (
@@ -115,6 +131,9 @@ function App() {
         setCurrentPage={setCurrentPage}
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
         setShowCart={setShowCart}
+        isAuthenticated={isAuthenticated}
+        userRole={userRole}
+        handleLogout={handleLogout}
       />
       {renderPage()}
       {showCart && (
